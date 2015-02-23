@@ -101,15 +101,17 @@ class HttpUtil
     }
 
     /**
-     * Returns a HTTP status line with headers from specified response.
+     * Builds the original HTTP headers from status and header components.
      *
-     * @param Response $response
-     * @return string HTTP status line.
+     * @param array $headers List of headers. Example: ['Content-Type: text/html', '...']
+     * @return array Key/value pairs of headers, e.g. ['Content-Type' => 'text/html']
      */
-    public static function formatAsStatusWithHeadersString(Response $response)
-    {
-        $headers = self::formatHeadersForCurl($response->getHeaders());
-        array_unshift($headers, self::formatAsStatusString($response));
-        return join("\r\n", $headers) . "\r\n\r\n";
+    public static function buildHeaders(Response $response) {
+        $headers = array();
+        $headers[] = self::formatAsStatusString($response);
+        foreach (self::formatHeadersForCurl($response->getHeaders()) as $headerLine) {
+            $headers[] = $headerLine;
+        }
+        return $headers;
     }
 }
